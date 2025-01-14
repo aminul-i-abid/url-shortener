@@ -1,0 +1,174 @@
+definitions:
+  models.Response:
+    properties:
+      data:
+        description: Data is omitted if nil or empty
+      message:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  models.ShortURL:
+    properties:
+      accessCount:
+        type: integer
+      createdAt:
+        type: string
+      id:
+        type: string
+      shortCode:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/health:
+    get:
+      description: Health check endpoint to verify if the server is running
+      responses:
+        "200":
+          description: Server is healthy
+          schema:
+            type: string
+      summary: Check server health
+      tags:
+      - Health
+  /api/v1/shorten:
+    post:
+      consumes:
+      - application/json
+      description: Create a new short URL from a long URL
+      parameters:
+      - description: Request body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.ShortURL'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ShortURL'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create a short URL
+      tags:
+      - Shorten
+  /api/v1/shorten/{shortCode}:
+    delete:
+      description: Delete a short URL by short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: shortCode
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Short link deleted successfully
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete a short URL
+      tags:
+      - Shorten
+    get:
+      description: Redirect a short code to the original URL
+      parameters:
+      - description: Short Code
+        in: path
+        name: shortCode
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect to original URL
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Redirect to the original URL
+      tags:
+      - Shorten
+    put:
+      consumes:
+      - application/json
+      description: Update the original URL for a given short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: shortCode
+        required: true
+        type: string
+      - description: Request body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.ShortURL'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ShortURL'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update a short URL
+      tags:
+      - Shorten
+  /api/v1/shorten/{shortCode}/stats:
+    get:
+      description: Retrieve statistics for a short URL
+      parameters:
+      - description: Short Code
+        in: path
+        name: shortCode
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ShortURL'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get stats for a short URL
+      tags:
+      - Shorten
+swagger: "2.0"
